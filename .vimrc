@@ -1,6 +1,30 @@
-filetype on
-filetype plugin on
-syntax enable
+set nocompatible
+
+"" VUNDLE
+let vundle_autoinstall = 0
+let vundle_readme = expand('~/.vim/bundle/vundle/README.md')
+if !filereadable(vundle_readme)
+echo "Installing Vundle..."
+echo ""
+silent !mkdir -p ~/.vim/bundle
+silent !git clone https://github.com/gmarik/vundle ~/.vim/bundle/vundle
+let vundle_autoinstall = 1
+endif
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#begin()
+Plugin 'gmarik/vundle'
+
+Plugin 'ervandew/supertab'
+Plugin 'sheerun/vim-polyglot'
+Plugin 'bling/vim-airline'
+Plugin 'tacahiroy/ctrlp-funky'
+Plugin 'gnupg'
+
+call vundle#end()
+filetype plugin indent on
+
+syntax on
 set grepprg=grep\ -nH\ $*
 
 set laststatus=2
@@ -8,12 +32,16 @@ set ruler
 set showcmd
 set wildmenu
 
-set autoindent
+set splitbelow
+set splitright
+
+set smartindent
 set expandtab
 set smarttab
-set shiftwidth=4
-set softtabstop=4
+set shiftwidth=2
+set softtabstop=2
 
+set relativenumber
 set number
 
 set ignorecase
@@ -22,6 +50,7 @@ set incsearch
 
 set hidden
 
+set timeoutlen=1000 ttimeoutlen=0
 set noerrorbells
 set visualbell t_vb=
 
@@ -38,6 +67,8 @@ colorscheme gruvbox
 let mapleader=' '
 set background=dark
 
+autocmd BufWritePre * :%s/\s\+$//e
+
 nnoremap <Leader>b :CtrlPBuffer<CR>
 nnoremap <Leader>h :windo wincmd K<CR>
 nnoremap <Leader>r :CtrlPMRUFiles<CR>
@@ -46,6 +77,12 @@ nnoremap <Leader>u :GundoToggle<CR>
 nnoremap <Leader>v :windo wincmd H<CR>
 nnoremap <Leader>W :%s/\v[[:blank:]]+$//<CR>
 
+
+if vundle_autoinstall
+  echo "Installing bundles..."
+  echo ""
+  :PluginInstall
+endif
 let g:airline_theme = 'gruvbox'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#tab_nr_type = 2
@@ -76,13 +113,6 @@ let g:ctrlp_working_path_mode = 'ra'
 let g:gundo_close_on_revert = 1
 let g:gundo_preview_bottom = 1
 let g:gundo_right = 1
-
-let g:syntastic_python_python_exec = '/wayfair/pkg/python2.7/latest/bin/python2.7'
-let g:syntastic_python_checkers = ['pylint']
-let g:syntastic_python_pylint_args = '--disable=
-                                        \broad-except,
-                                        \invalid-name,
-                                        \missing-docstring'
 
 let g:ycm_autoclose_preview_window_after_insertion = 1
 
