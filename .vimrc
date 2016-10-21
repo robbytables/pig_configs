@@ -1,3 +1,5 @@
+"""" PIG STYLE"""
+
 set nocompatible
 
 "" VUNDLE
