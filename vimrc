@@ -62,10 +62,7 @@ inoremap jj <Esc>
 nnoremap ; :
 nnoremap : ;
 
-execute pathogen#infect()
-Helptags
 
-colorscheme gruvbox
 let mapleader=' '
 set background=dark
 
@@ -85,8 +82,6 @@ if vundle_autoinstall
   echo ""
   :PluginInstall
 endif
-let g:airline_theme = 'gruvbox'
-let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#tab_nr_type = 2
 let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline#extensions#tabline#show_close_button = 0
