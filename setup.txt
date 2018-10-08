@@ -1,0 +1,4 @@
+:: august 2018
+- Using iterm2, zsh, spaceship prompt
+- autocomplete: https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md
+- syntax coloring: https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md

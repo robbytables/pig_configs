@@ -1,116 +1,140 @@
-"""" PIG STYLE"""
+"""""""""""""""""""""""""""
+" General
+"""""""""""""""""""""""""""
 
+syntax on
+filetype off
+
+" Sets how many lines of history VIM has to remember
+set history=700
+
+" Autoreads external file changes
+set autoread
+set mouse=a
+set showcmd
+
+" With a map leader it's possible to do extra key combinations
+" like <leader>w saves the current file
+let mapleader = ","
+let g:mapleader = ","
+
+" Fast saving
+nmap <leader>w :w!<cr>
+nmap <leader>x :x<cr>
+
+" :W sudo saves the file 
+" (useful for handling the permission-denied error)
+command W w !sudo tee % > /dev/null
+
+
+"""""""""""""""""""""""""""
+" UI
+"""""""""""""""""""""""""""
 set nocompatible
-
-"" VUNDLE
-let vundle_autoinstall = 0
-let vundle_readme = expand('~/.vim/bundle/vundle/README.md')
-if !filereadable(vundle_readme)
-echo "Installing Vundle..."
-echo ""
-silent !mkdir -p ~/.vim/bundle
-silent !git clone https://github.com/gmarik/vundle ~/.vim/bundle/vundle
-let vundle_autoinstall = 1
-endif
-
-set rtp+=~/.vim/bundle/vundle/
+set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-Plugin 'gmarik/vundle'
-
-Plugin 'ervandew/supertab'
-Plugin 'sheerun/vim-polyglot'
-Plugin 'bling/vim-airline'
-Plugin 'tacahiroy/ctrlp-funky'
-Plugin 'gnupg'
-
+Plugin 'morhetz/gruvbox'
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'L9'
+Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+Plugin 'scrooloose/nerdtree'
+Plugin 'jistr/vim-nerdtree-tabs'
 call vundle#end()
 filetype plugin indent on
 
-syntax on
-set grepprg=grep\ -nH\ $*
+colorscheme gruvbox
+set t_Co=256
 
-set laststatus=2
-set ruler
-set showcmd
-set wildmenu
+let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
 
-set splitbelow
-set splitright
+" Set 7 lines to the cursor - when moving vertically using j/k
+set so=7
 
-set smartindent
+" Ignore compiled files
+set wildignore=*.o,*~,*.pyc
+
+set grepprg=grep\ -nH\ $
+
+set autoindent
 set expandtab
 set smarttab
 set shiftwidth=2
 set softtabstop=2
 
-set relativenumber
+if has('mouse')
+  set mouse=a
+endif
+
 set number
 
 set ignorecase
 set smartcase
-set incsearch
 
-set hidden
+set lazyredraw
 
-set timeoutlen=1000 ttimeoutlen=0
-set noerrorbells
-set visualbell t_vb=
+" Show matching brackets when text indicator is over them
+set showmatch 
+" How many tenths of a second to blink when matching brackets
+set mat=2
 
-set mouse=a
+" Add a bit extra margin to the left
+set foldcolumn=1
+
+" Linebreak on 500 characters
+set lbr
+set tw=500
 
 inoremap jj <Esc>
+nnoremap JJJJ <Nop>
+
+set incsearch
+
+set nohidden
 nnoremap ; :
 nnoremap : ;
 
+set hlsearch
+""""""""""""""""""""""""""""""
+" => Visual mode related
+""""""""""""""""""""""""""""""
+" Visual mode pressing * or # searches for the current selection
+" Super useful! From an idea by Michael Naumann
+vnoremap <silent> * :call VisualSelection('f', '')<CR>
+vnoremap <silent> # :call VisualSelection('b', '')<CR>
 
-let mapleader=' '
-set background=dark
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Moving around, tabs, windows and buffers
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Treat long lines as break lines (useful when moving around in them)
+map j gj
+map k gk
 
-autocmd BufWritePre * :%s/\s\+$//e
-
-nnoremap <Leader>b :CtrlPBuffer<CR>
-nnoremap <Leader>h :windo wincmd K<CR>
-nnoremap <Leader>r :CtrlPMRUFiles<CR>
-nnoremap <Leader>t :CtrlPTag<CR>
-nnoremap <Leader>u :GundoToggle<CR>
-nnoremap <Leader>v :windo wincmd H<CR>
-nnoremap <Leader>W :%s/\v[[:blank:]]+$//<CR>
+" Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
+map <space> /
+map <c-space> ?
 
 
-if vundle_autoinstall
-  echo "Installing bundles..."
-  echo ""
-  :PluginInstall
-endif
-let g:airline#extensions#tabline#tab_nr_type = 2
-let g:airline#extensions#tabline#buffer_nr_show = 1
-let g:airline#extensions#tabline#show_close_button = 0
-if !exists('g:airline_symbols')
-  let g:airline_symbols = {}
-endif
-let g:airline_left_sep = ''
-let g:airline_right_sep = ''
-let g:airline_symbols.linenr = 'λ'
-let g:airline_symbols.branch = 'β'
-let g:airline_symbols.paste = 'ρ'
-let g:airline_symbols.readonly = 'Δ'
-let g:airline_symbols.whitespace = 'ω'
+" Disable highlight when <leader><cr> is pressed
+map <silent> <leader><cr> :noh<cr>
 
-let g:ctrlp_arg_map = 1
-let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-  \ 'file': '\v\.(gif|jpg|pdf|png|pyc|so)$'
-\}
-let g:ctrlp_follow_symlinks = 1
-let g:ctrlp_open_multiple_files = 'i'
-let g:ctrlp_open_new_file = 'r'
-let g:ctrlp_show_hidden = 1
-let g:ctrlp_working_path_mode = 'ra'
 
-let g:gundo_close_on_revert = 1
-let g:gundo_preview_bottom = 1
-let g:gundo_right = 1
 
-let g:ycm_autoclose_preview_window_after_insertion = 1
+"htmlheader plugin 
+autocmd BufNewFile *.html,*.htm,*.php source ~/.vim/ftplugin/htmltemplate.vim
 
-let g:php_refactor_command='php /csnzoo/rgrodin/bin/refactor.phar'
+" PEP8
+"au BufNewFile,BufRead *.py
+"    \ set tabstop=4
+"    \ set softtabstop=4
+"    \ set shiftwidth=4
+"    \ set textwidth=79
+"    \ set expandtab
+"    \ set autoindent
+"    \ set fileformat=unix
+
+"au BufNewFile,BufRead *.js, *.html, *.css, *.php
+ "   \ set tabstop=2
+  "  \ set softtabstop=2
+   " \ set shiftwidth=2
+
+"au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
