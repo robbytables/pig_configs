@@ -9,7 +9,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "typescript-language-server", "pyright" }
+        ensure_installed = { "lua_ls", "typescript-language-server", "pyright", "jdtls" }
       })
     end
   },
@@ -38,6 +38,7 @@ return {
       lspconfig.lua_ls.setup({})
       lspconfig.typescript.setup({})
       lspconfig.pyright.setup({})
+      lspconfig.jdtls.setup({})
     end
   }
 }
