@@ -9,6 +9,7 @@
 
 - link:
     ~/.config/nvim: config/nvim
+    ~/.zshrc: config/zsh/.zshrc
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
