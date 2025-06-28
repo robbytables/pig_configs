@@ -18,6 +18,17 @@ alias ls="ls -G"
 alias ll="ls -la"
 alias gs="git status"
 
+# Navigation
+alias slopeb="cd ~/code/slope/crm-backend/"
+alias slopef="cd ~/code/slope/crm-frontend/"
+alias slopex="cd ~/code/slope/crm-extension/"
+
 export NVM_DIR="$HOME/.nvm"
   [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
   [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+ # Load super secret configurations (aliases, credentials, etc.)
+if [ -f ~/.zshrc.private ]; then
+    source ~/.zshrc.private
+fi
+source '/opt/homebrew/opt/autoenv/activate.sh'

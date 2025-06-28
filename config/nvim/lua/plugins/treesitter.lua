@@ -8,6 +8,7 @@ return {
           "bash",
           "lua",
           "vim",
+          "json",
           "javascript",
           "typescript",
           "python",

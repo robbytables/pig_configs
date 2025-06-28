@@ -33,5 +33,8 @@ return {
         })
       })
     end
-  }
+  },
+  {
+    'honza/vim-snippets'
+  },
 }

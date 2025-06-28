@@ -1,5 +1,8 @@
 return {
   {
+  "b0o/schemastore.nvim",
+  },
+  {
     "williamboman/mason.nvim",
     config = function()
       require("mason").setup()
@@ -9,7 +12,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "ts_ls", "pyright", "jdtls" }
+        ensure_installed = { "lua_ls", "ts_ls", "pyright", "jdtls", "eslint", "jsonls" }
       })
     end
   },
@@ -34,9 +37,52 @@ return {
         end,
       })
 
+      -- Format on save
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        pattern = '*.{js,jsx,ts,tsx,json}',
+        callback = function()
+          vim.lsp.buf.format({ async = false })
+        end,
+      })
+
       -- Configure LSP servers
-      lspconfig.lua_ls.setup({})
-      lspconfig.ts_ls.setup({})
+      lspconfig.lua_ls.setup({
+        filetypes = {
+          "typescript", "typescriptreact", "javascript", "javascriptreact"
+        },
+        settings = {
+          typescript = {
+            preferences = {
+              includePackageJsonAutoImports = "auto",
+              importModuleSpecifier = "relative"
+            }
+          },
+          javascript = {
+            preferences = {
+              includePackageJsonAutoImports = "auto"
+            }
+          }
+        }
+      })
+
+      lspconfig.eslint.setup({
+        filetypes = { 
+          "javascript", "javascriptreact", "typescript", "typescriptreact" 
+        },
+        settings = {
+          workingDirectories = { mode = "auto" }
+        }
+      })
+
+      lspconfig.jsonls.setup({
+        settings = {
+          json = {
+            schemas = require('schemastore').json.schemas(),
+            validate = { enable = true },
+          },
+        },
+      })
+
       lspconfig.pyright.setup({})
       lspconfig.jdtls.setup({})
     end
