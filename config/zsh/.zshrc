@@ -17,6 +17,8 @@ setopt appendhistory
 alias ls="ls -G"
 alias ll="ls -la"
 alias gs="git status"
+alias gco="git checkout"
+alias gp="git pull"
 
 # Navigation
 alias slopeb="cd ~/code/slope/crm-backend/"
@@ -32,3 +34,14 @@ if [ -f ~/.zshrc.private ]; then
     source ~/.zshrc.private
 fi
 source '/opt/homebrew/opt/autoenv/activate.sh'
+
+alias python="python3"
+
+rename_band_photos() {
+  local band_slug=$(echo "$1" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+  ls -v | cat -n | while read n f; do
+    mv "$f" "${band_slug}-${n}-2026-actlis-lens.jpg"
+  done
+}
+
+ytdl() {yt-dlp -x -t mp3 "$1"}

@@ -1,15 +1,22 @@
 return {
   {
-    'jose-elias-alvarez/null-ls.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim' },
+    'stevearc/conform.nvim',
+    event = { 'BufWritePre' },
+    cmd = { 'ConformInfo' },
     config = function()
-      local null_ls = require('null-ls')
-      null_ls.setup({
-        sources = {
-          null_ls.builtins.formatting.prettier.with({
-            filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'json' }
-          }),
-          null_ls.builtins.diagnostics.eslint,
+      local prettier = { 'prettierd', 'prettier', stop_after_first = true }
+      require('conform').setup({
+        formatters_by_ft = {
+          javascript = prettier,
+          javascriptreact = prettier,
+          typescript = prettier,
+          typescriptreact = prettier,
+          json = prettier,
+        },
+        -- Fall back to the LSP formatter when prettier isn't available
+        format_on_save = {
+          timeout_ms = 1000,
+          lsp_format = 'fallback',
         },
       })
     end

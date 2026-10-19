@@ -1,6 +1,6 @@
 return {
   {
-  "b0o/schemastore.nvim",
+    "b0o/schemastore.nvim",
   },
   {
     "williamboman/mason.nvim",
@@ -10,7 +10,10 @@ return {
   },
   {
     "williamboman/mason-lspconfig.nvim",
+    dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
     config = function()
+      -- mason-lspconfig v2 calls vim.lsp.enable() for every installed server,
+      -- picking up the vim.lsp.config() overrides set in nvim-lspconfig below
       require("mason-lspconfig").setup({
         ensure_installed = { "lua_ls", "ts_ls", "pyright", "jdtls", "eslint", "jsonls" }
       })
@@ -18,9 +21,32 @@ return {
   },
   {
     "neovim/nvim-lspconfig",
+    dependencies = { "b0o/schemastore.nvim" },
     config = function()
-      local lspconfig = require("lspconfig")
-      
+      -- Configure diagnostics display
+      vim.diagnostic.config({
+        virtual_text = true,      -- Show diagnostics inline
+        underline = true,         -- Underline problematic text
+        update_in_insert = false, -- Don't update while typing
+        severity_sort = true,     -- Sort by severity
+        signs = {
+          text = {
+            [vim.diagnostic.severity.ERROR] = "󰅚 ",
+            [vim.diagnostic.severity.WARN] = "󰀪 ",
+            [vim.diagnostic.severity.HINT] = "󰌶 ",
+            [vim.diagnostic.severity.INFO] = " ",
+          },
+        },
+        float = {
+          focusable = false,
+          style = "minimal",
+          border = "rounded",
+          source = true,
+          header = "",
+          prefix = "",
+        },
+      })
+
       -- Setup keybinds when an LSP attaches to a buffer
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('UserLspConfig', {}),
@@ -34,19 +60,38 @@ return {
           vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
           vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
           vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+          -- Add diagnostic navigation
+          vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = -1, float = true }) end, opts)
+          vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = 1, float = true }) end, opts)
+          vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
+          vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
         end,
       })
 
-      -- Format on save
-      vim.api.nvim_create_autocmd('BufWritePre', {
-        pattern = '*.{js,jsx,ts,tsx,json}',
-        callback = function()
-          vim.lsp.buf.format({ async = false })
-        end,
-      })
+      -- Formatting on save is handled by conform.nvim (see prettier.lua)
 
       -- Configure LSP servers
-      lspconfig.lua_ls.setup({
+      vim.lsp.config('lua_ls', {
+        settings = {
+          Lua = {
+            runtime = {
+              version = 'LuaJIT',
+            },
+            diagnostics = {
+              globals = { 'vim' },
+            },
+            workspace = {
+              library = vim.api.nvim_get_runtime_file("", true),
+            },
+            telemetry = {
+              enable = false,
+            },
+          },
+        },
+      })
+
+      -- TypeScript/JavaScript LSP
+      vim.lsp.config('ts_ls', {
         filetypes = {
           "typescript", "typescriptreact", "javascript", "javascriptreact"
         },
@@ -65,16 +110,28 @@ return {
         }
       })
 
-      lspconfig.eslint.setup({
-        filetypes = { 
-          "javascript", "javascriptreact", "typescript", "typescriptreact" 
+      -- Keep lspconfig's on_attach, which defines LspEslintFixAll
+      local base_eslint_on_attach = vim.lsp.config.eslint.on_attach
+      vim.lsp.config('eslint', {
+        filetypes = {
+          "javascript", "javascriptreact", "typescript", "typescriptreact"
         },
         settings = {
           workingDirectories = { mode = "auto" }
-        }
+        },
+        on_attach = function(client, bufnr)
+          if base_eslint_on_attach then
+            base_eslint_on_attach(client, bufnr)
+          end
+          -- Auto-fix on save
+          vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = bufnr,
+            command = "LspEslintFixAll",
+          })
+        end,
       })
 
-      lspconfig.jsonls.setup({
+      vim.lsp.config('jsonls', {
         settings = {
           json = {
             schemas = require('schemastore').json.schemas(),
@@ -82,9 +139,6 @@ return {
           },
         },
       })
-
-      lspconfig.pyright.setup({})
-      lspconfig.jdtls.setup({})
     end
   }
 }
